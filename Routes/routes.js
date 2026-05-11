@@ -20,8 +20,8 @@ router.get('/resume-history',jwtMiddleWare,resumeController.getResumeHistory)
 router.delete('/delete-resume/:id',jwtMiddleWare,resumeController.deleteResume)
 
 //ADMIN
-router.post('/add-job',jobController.addJob)
-router.post('/add-skill',skillController.addSkill)
+router.post('/add-job',jwtMiddleWare,jobController.addJob)
+router.post('/add-skill',jwtMiddleWare,skillController.addSkill)
 
 
 module.exports=router

@@ -4,17 +4,17 @@ const skillSchema = new mongoose.Schema({
 
     skill:{
         type:String,
-        required:true
+        required:true,
     },
 
     aliases:{
         type:[String],
-        default:[]
+        default:[],
     },
 
     category:{
         type:String,
-        default:"General"
+        default:"General",
     }
 
 })
