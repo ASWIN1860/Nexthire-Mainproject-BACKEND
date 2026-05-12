@@ -2,34 +2,38 @@ const mongoose = require('mongoose')
 
 const jobSchema = new mongoose.Schema({
 
-    title: {
-        type: String,
-        required: true
-    },
+  title:{
+    type:String
+  },
 
-    company: {
-        type: String,
-        required: true
-    },
+  company:{
+    type:String
+  },
 
-    location: {
-        type: String,
-        required: true
-    },
+  location:{
+    type:String
+  },
 
-    salary: {
-        type: String
-    },
+  salary:{
+    type:String
+  },
 
-    description: {
-        type: String
-    },
+  description:{
+    type:String
+  },
 
-    skills: {
-        type: [String],
-        required: true
-    }
+  skills:{
+    type:[String]
+  },
 
+  status:{
+    type:String,
+    default:"Active"
+  }
+
+},
+{
+  timestamps:true
 })
 
 const jobs = mongoose.model("jobs", jobSchema)

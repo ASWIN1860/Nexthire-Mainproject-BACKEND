@@ -25,6 +25,13 @@ const userSchema=new mongoose.Schema({
         type:String,
         default:"User"
     },
+    status:{
+        type:String,
+        default:"Active",
+    }
+},
+{  
+    timestamps:true  
 })
 
 const users=mongoose.model('users',userSchema)

@@ -222,7 +222,6 @@ exports.uploadResume = async (req, res) => {
 
     console.log("Matched Jobs :", matchedJobs);
 
-
     // =========================
     // AI ANALYSIS
     // =========================
@@ -239,15 +238,14 @@ exports.uploadResume = async (req, res) => {
     let resumeCategory = "";
 
     try {
-      const completion =
-        await openai.chat.completions.create({
-          model: "llama-3.3-70b-versatile",
+      const completion = await openai.chat.completions.create({
+        model: "llama-3.3-70b-versatile",
 
-          messages: [
-            {
-              role: "user",
+        messages: [
+          {
+            role: "user",
 
-              content: `
+            content: `
 You are an expert ATS Resume Analyzer AI.
 
 Analyze this resume professionally.
@@ -283,24 +281,19 @@ Do not explain anything.
   "resumeCategory":""
 }
 `,
-            },
-          ],
+          },
+        ],
 
-          temperature: 0.7,
-        });
-
+        temperature: 0.7,
+      });
 
       // =========================
       // RAW AI RESPONSE
       // =========================
 
-      const rawResponse =
-        completion.choices[0].message.content;
+      const rawResponse = completion.choices[0].message.content;
 
-      console.log(
-        "RAW AI RESPONSE :",
-        rawResponse,
-      );
+      console.log("RAW AI RESPONSE :", rawResponse);
 
       // =========================
       // CLEAN RESPONSE
@@ -315,8 +308,7 @@ Do not explain anything.
       // PARSE AI JSON
       // =========================
 
-      const parsedAI =
-        JSON.parse(cleanedResponse);
+      const parsedAI = JSON.parse(cleanedResponse);
 
       console.log("PARSED AI :", parsedAI);
 
@@ -326,24 +318,17 @@ Do not explain anything.
 
       weaknesses = parsedAI.weaknesses || [];
 
-      recommendations =
-        parsedAI.recommendations || [];
+      recommendations = parsedAI.recommendations || [];
 
-      experienceLevel =
-        parsedAI.experienceLevel || "";
+      experienceLevel = parsedAI.experienceLevel || "";
 
-      resumeCategory =
-        parsedAI.resumeCategory || "";
+      resumeCategory = parsedAI.resumeCategory || "";
 
       console.log("AI Analysis Success");
     } catch (aiErr) {
-      console.log(
-        "AI ERROR :",
-        aiErr.message,
-      );
+      console.log("AI ERROR :", aiErr.message);
     }
     // console.log(aiResponse,strengths,weaknesses,recommendations,experienceLevel,resumeCategory)
-
 
     // =========================
     // SAVE RESUME
@@ -380,7 +365,7 @@ Do not explain anything.
 
       experienceLevel,
 
-      resumeCategory
+      resumeCategory,
     });
 
     await newResume.save();
@@ -433,6 +418,25 @@ exports.deleteResume = async (req, res) => {
     const { id } = req.params;
     await resume.findByIdAndDelete(id);
     res.status(200).json("resume deleted successfully");
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+};
+
+//get latest resume by user id
+exports.getResumeByUserId = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const latestResume = await resume
+      .findOne({ userId: id })
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      resume: latestResume,
+    });
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
