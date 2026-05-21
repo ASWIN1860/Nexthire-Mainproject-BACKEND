@@ -1,41 +1,33 @@
-const skillModel=require('../Models/skillModel')
+const skillModel = require("../Models/skillModel");
 // ======================
 // ADD SKILL
 // ======================
 
 exports.addSkill = async (req, res) => {
   try {
-    const { skill, aliases, category } =
-      req.body;
+    const { skill, aliases, category } = req.body;
 
     // VALIDATION
 
-    if (
-      !skill ||
-      !aliases ||
-      !category
-    ) {
+    if (!skill || !aliases || !category) {
       return res.status(400).json({
         success: false,
 
-        message:
-          "Please fill all fields",
+        message: "Please fill all fields",
       });
     }
 
     // CHECK EXISTING SKILL
 
-    const existingSkill =
-      await skillModel.findOne({
-        skill: skill.toLowerCase(),
-      });
+    const existingSkill = await skillModel.findOne({
+      skill: skill.toLowerCase(),
+    });
 
     if (existingSkill) {
       return res.status(400).json({
         success: false,
 
-        message:
-          "Skill already exists",
+        message: "Skill already exists",
       });
     }
 
@@ -43,9 +35,7 @@ exports.addSkill = async (req, res) => {
 
     const formattedAliases = aliases
       .split(",")
-      .map((item) =>
-        item.trim().toLowerCase(),
-      );
+      .map((item) => item.trim().toLowerCase());
 
     // CREATE NEW SKILL
 
@@ -54,19 +44,15 @@ exports.addSkill = async (req, res) => {
 
       aliases: formattedAliases,
 
-      category:
-        category.toLowerCase(),
+      category: category.toLowerCase(),
     });
-    
 
     await newSkill.save();
-
 
     res.status(200).json({
       success: true,
 
-      message:
-        "Skill added successfully",
+      message: "Skill added successfully",
 
       data: newSkill,
     });
@@ -76,8 +62,7 @@ exports.addSkill = async (req, res) => {
     res.status(500).json({
       success: false,
 
-      message:
-        "Failed to add skill",
+      message: "Failed to add skill",
     });
   }
 };

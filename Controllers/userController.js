@@ -20,6 +20,12 @@ exports.signup = async (req, res) => {
           password: password,
         });
         await user.save();
+        if (global.io) {
+      global.io.emit("newNotification", {
+        message: "New User Registered",
+        targetRole: "admin",
+      });
+    }
         res.status(200).json("Signup Success");
       }
     }
@@ -45,7 +51,7 @@ exports.signin = async (req, res) => {
       }
       const token = jwt.sign({ email: user?.email,id:user?._id }, process.env.SECRET_KEY);
       res.status(200).json({
-          token,username: user?.username,email: user?.email,profile: user?.profile,bio: user?.bio,role: user?.role
+          token,username: user?.username,email: user?.email,profile: user?.profile,bio: user?.bio,role: user?.role,createdAt:user?.createdAt
         });
         
     } else {
@@ -65,7 +71,8 @@ exports.googleSignin = async (req, res) => {
         email,
         profile,
         role,
-        bio
+        bio,
+        createdAt
       });
       await newUser.save();
       existingUser=newUser
@@ -77,7 +84,7 @@ exports.googleSignin = async (req, res) => {
         return res.status(403).json({message:"Your account is inactive!!"})
       }
     const token = jwt.sign({ email:existingUser.email,id:existingUser._id }, process.env.SECRET_KEY);
-    res.status(200).json({ token,username:username,profile:profile,email:email,bio:bio,role:role});
+    res.status(200).json({ token,username:existingUser.username,profile:existingUser.profile,email:existingUser.email,bio:existingUser.bio,role:existingUser.role,createdAt:existingUser.createdAt});
   } 
   catch (err){
     console.log(err);
@@ -103,11 +110,26 @@ exports.getAllUsers=async(req,res)=>{
 exports.editUser=async(req,res)=>{
   try{
     const {id}=req.params
-    const {username,status}=req.body
+    const {username,status,profile,bio}=req.body
+    console.log("editUser hit:", {id, body: req.body});
+    const updateData = {}
+    if(username !== undefined) updateData.username = username;
+    if(status !== undefined) updateData.status = status;
+    if(profile !== undefined) updateData.profile = profile;
+    if(bio !== undefined) updateData.bio = bio;
+    console.log("updateData:", updateData);
+
     const updateUser=await users.findByIdAndUpdate(
-      id,{username,status},{new:true}
+      id,updateData,{new:true}
     )
+    console.log("updateUser result:", updateUser);
     res.status(200).json(updateUser)
+    if (global.io) {
+      global.io.emit("newNotification", {
+        message: "Profile Updated Successfully",
+        targetUserId: id,
+      });
+    }
   }
   catch(err){
     console.log(err)

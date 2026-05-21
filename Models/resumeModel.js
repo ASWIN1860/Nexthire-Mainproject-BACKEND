@@ -66,8 +66,57 @@ const resumeSchema = new mongoose.Schema(
     resumeCategory: {
       type: String,
     },
+
+    atsAnalysis: {
+      type: Object,
+    },
+
+    scores: {
+      type: Object,
+    },
+
+    recommendedSkills: {
+      type: [String],
+    },
+
+    keywordDensity: {
+      type: Object,
+    },
+
+    projectAnalysis: {
+      type: Object,
+    },
+
+    experienceAnalysis: {
+      type: Object,
+    },
+
+    achievementAnalysis: {
+      type: Object,
+    },
+
+    technicalDepthAnalysis: {
+      type: Object,
+    },
+
+    competitivenessAnalysis: {
+      type: Object,
+    },
+
+    jobFitAnalysis: {
+      type: Object,
+    },
+
+    improvementSuggestions: {
+      type: Array,
+    },
+
+    finalVerdict: {
+      type: String,
+    },
   },
   { timestamps: true },
 );
 
-module.exports = mongoose.model("resume", resumeSchema);
+const resumes= mongoose.model("resume", resumeSchema);
+module.exports=resumes
