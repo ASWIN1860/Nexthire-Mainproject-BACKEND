@@ -825,7 +825,7 @@ ${jobDescription}`,
 
     if (global.io) {
       global.io.emit("newNotification", {
-        message: `New Resume Uploaded. AtsScore is:${atsReadinessScore}`,
+        message: `New Resume Uploaded.`,
         targetUserId: userId,
       });
     }
