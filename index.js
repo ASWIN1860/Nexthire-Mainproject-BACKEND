@@ -37,7 +37,10 @@ const io = new Server(server, {
       "https://nexthire-mainproject-frontend-kps5.vercel.app"
     ],
     methods: ["GET", "POST"],
+    credentials:true,
   },
+  pingInterval:60000,
+  pingTimeout:25000,
 });
 
 //IMPORTANT
