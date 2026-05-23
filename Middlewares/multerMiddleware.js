@@ -1,7 +1,11 @@
 const multer=require('multer')
+const fs = require('fs')
 
 const storage=multer.diskStorage({
     destination:(req,file,cb)=>{
+        if(!fs.existsSync("./resumeUploads")){
+            fs.mkdirSync("./resumeUploads", { recursive: true })
+        }
         cb(null,"./resumeUploads")
     },
     filename:(req,file,cb)=>{

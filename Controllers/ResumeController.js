@@ -4,6 +4,13 @@ const skillModel = require("../Models/skillModel");
 const pdfParse = require("pdf-parse");
 const fs = require("fs");
 const openAI = require("openai");
+const cloudinary = require("cloudinary").v2;
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 // upload resume MAIN FEATURE**
 const openai = new openAI.OpenAI({
@@ -49,6 +56,29 @@ exports.uploadResume = async (req, res) => {
     const extractedText = pdfData.text;
 
     console.log("Extracted Text :", extractedText);
+
+    // =========================
+    // UPLOAD TO CLOUDINARY
+    // =========================
+
+    let cloudinaryUrl = "";
+    try {
+      const cloudinaryResult = await cloudinary.uploader.upload(pdfPath, {
+        folder: "NextHire_Resumes",
+        resource_type: "auto"
+      });
+      cloudinaryUrl = cloudinaryResult.secure_url;
+    } catch (error) {
+      console.log("Cloudinary Upload Error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Error uploading file to Cloudinary"
+      });
+    } finally {
+      if (fs.existsSync(pdfPath)) {
+        fs.unlinkSync(pdfPath);
+      }
+    }
 
     // =========================
     // GET ALL SKILLS
@@ -789,7 +819,7 @@ ${jobDescription}`,
 
     const newResume = new resume({
       userId,
-      resumeFile: req.file.path,
+      resumeFile: cloudinaryUrl,
       description: jobDescription,
       extractedText,
       skills: matchedSkills,
